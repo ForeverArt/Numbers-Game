@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="description" content="A Numbers Crad Game">
+    <meta name="author" content="dron">
+    <meta name="viewport" content="width=device-width, height=device-height, user-scalable=no, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="stylesheet" href="css/index.css">
+
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+    <script src="scripts/bootstrap.js"></script>
+    <title>Numbers-Game Online</title>
+  </head>
+  <body>
+    <div class="whole">
+      <canvas id="view" width="1280" height="720"></canvas>
+      <div class="rule">
+        <a id="ruleBtn" role="button" data-toggle="collapse" href="#collapseRule" aria-expanded="false" aria-controls="collapseRule">
+          &nbsp;规则收纳盒&nbsp;
+        </a>
+        <div class="collapse" id="collapseRule">
+          <div class="well-sm" id="WellRule">
+            规则是不可能的，这辈子都不可能的。
+          </div>
+        </div>
+      </div>
+      <p class="copyright"><a class="downLink" href="https://foreverart.github.io/portal/" target="_blank">Copyright By ForeverArt</a></p>
+      <p class="gitLocation">Github:&nbsp;<a class="downLink" href="https://github.com/ForeverArt/Numbers-Game" target="_blank">https://github.com/ForeverArt/Numbers-Game</a></p>
+    </div>
+    <audio id="audio" src="sounds/bgMusic.mp3" style="opacity:0" preload="auto" autoplay="autoplay" controls loop hidden="true"/>
+  </body>
+  <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+  <script src="scripts/ui.js"></script>
+  <script src="scripts/client.js"></script>
+</html>
