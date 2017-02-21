@@ -24,6 +24,7 @@ card.borderWidth = 4;
 card.selfBorderColor = "black";
 card.oppositeBorderColor = "white";
 card.selectedColor = "red";
+card.clickedColor = "brown";
 card.fontWidth = 30;
 card.font = "30px Arial";
 card.fontColor = "white";
@@ -153,23 +154,17 @@ statusDescriptionArea.fontHeightOffset = 20;
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // 手牌位置记录
 var selfCardPositions = new Array();
+var selfCardNum = 9;
+var selfCardOddNum = 5;
+var selfCardEvenNum = 4;
+var mouseOnCardNum = -1;
+var clickOnCardNum = -1;
 var oppositeCardPositions = new Array();
+var oppositeCardNum = 9;
+var oppositeCardOddNum = 5;
+var oppositeCardEvenNum = 4;
 // record位置记录
 var recordNum = 0;
 
@@ -271,6 +266,8 @@ function initialArea(ctx){
   //recordArea
   ctx.fillStyle="rgba(0,255,0,0.2)";
   ctx.fillRect(recordArea.x,recordArea.y,recordArea.width,recordArea.height);
+  //stageArea
+  updateOnlineNum(ctx,0);
 }
 // 初始化手牌
 function initialCards(ctx){
@@ -306,6 +303,25 @@ function setCardSelected(ctx,x,y){
 }
 
 function setCardUnSelected(ctx,x,y,belongSelf){
+  // border
+  ctx.lineWidth = card.borderWidth;
+  // color
+  if (belongSelf == 1){
+    ctx.strokeStyle = card.selfBorderColor;
+  }else{
+    ctx.strokeStyle = card.oppositeBorderColor;
+  }
+  ctx.strokeRect(x, y, card.width, card.height);
+}
+
+function setCardClicked(ctx,x,y){
+  // border
+  ctx.lineWidth = card.borderWidth;
+  ctx.strokeStyle = card.clickedColor;
+  ctx.strokeRect(x, y, card.width, card.height);
+}
+
+function setCardUnClicked(ctx,x,y,belongSelf){
   // border
   ctx.lineWidth = card.borderWidth;
   // color
@@ -414,7 +430,11 @@ function updateStatus(ctx,status){
     ctx.fillText(statusDescription,stageArea.x+stageArea.width/2+statusDescriptionArea.fontWidthOffset,stageArea.y+stageArea.height/2+statusDescriptionArea.fontHeightOffset);
   }else if(status==2){
     repaintStage(ctx);
-
+    ctx.fillStyle = statusDescriptionArea.fontColor;
+    ctx.font = statusDescriptionArea.font;
+    statusDescription = 'Starting Find A Match...';
+    console.log(statusDescription);
+    ctx.fillText(statusDescription,stageArea.x+stageArea.width/2+statusDescriptionArea.fontWidthOffset,stageArea.y+stageArea.height/2+statusDescriptionArea.fontHeightOffset);
   }else if(status==3){
 
   }
@@ -437,3 +457,84 @@ function updateOnlineNum(ctx,num){
   var text = "当前在线人数: "+num;
   ctx.fillText(text,onlineUserNumArea.x+onlineUserNumArea.fontWidthOffset,onlineUserNumArea.y+onlineUserNumArea.fontHeightOffset);
 }
+
+function waitForOpposite(ctx){
+
+}
+
+function chooseToGo(ctx){
+
+}
+
+function mathcherQuit(ctx){
+
+}
+
+function getMouseOnSelfCardNum(x,y){
+  var temp = selfCardNum;
+  while (temp--) {
+    var cardx = selfCardPositions[temp][0];
+    var cardy = selfCardPositions[temp][1];
+    var xOffset = 57;
+    var yOffset = 8;
+    cardx = cardx + xOffset;
+    cardy = cardy + yOffset;
+    if (x>=cardx&&x<=cardx+card.width&&y>=cardy&&y<=cardy+card.height) {
+      return temp;
+    }
+  }
+  return -1;
+}
+
+function mouseMove(ev){
+  ev= ev || window.event;
+  var mousePos = mouseCoords(ev);
+  var nowMouseOnSelfCardNum = getMouseOnSelfCardNum(mousePos.x,mousePos.y);
+  if((nowMouseOnSelfCardNum==mouseOnCardNum)||(nowMouseOnSelfCardNum==-1&&mouseOnCardNum==-1)){
+
+  }else if (nowMouseOnSelfCardNum==-1&&mouseOnCardNum!=-1&&clickOnCardNum!=mouseOnCardNum){
+    setCardUnSelected(ctx,selfCardPositions[mouseOnCardNum][0],selfCardPositions[mouseOnCardNum][1],1);
+  }else if(nowMouseOnSelfCardNum!=-1&&mouseOnCardNum==-1&&nowMouseOnSelfCardNum!=clickOnCardNum){
+    setCardSelected(ctx,selfCardPositions[nowMouseOnSelfCardNum][0],selfCardPositions[nowMouseOnSelfCardNum][1]);
+  }else if (nowMouseOnSelfCardNum!=-1&&mouseOnCardNum!=-1){
+    if (mouseOnCardNum!=clickOnCardNum){
+      setCardUnSelected(ctx,selfCardPositions[mouseOnCardNum][0],selfCardPositions[mouseOnCardNum][1],1);
+    }
+    if (nowMouseOnSelfCardNum!=clickOnCardNum){
+      setCardSelected(ctx,selfCardPositions[nowMouseOnSelfCardNum][0],selfCardPositions[nowMouseOnSelfCardNum][1]);
+    }
+  }
+  mouseOnCardNum = nowMouseOnSelfCardNum;
+}
+
+function mouseCoords(ev){
+  if(ev.pageX || ev.pageY){
+    return {x:ev.pageX, y:ev.pageY};
+  }
+  return {
+    x:ev.clientX + document.body.scrollLeft - document.body.clientLeft,
+    y:ev.clientY + document.body.scrollTop - document.body.clientTop
+  };
+}
+
+document.onmousemove = mouseMove;
+
+function mouseDown(ev){
+  ev= ev || window.event;
+  var mousePos = mouseCoords(ev);
+  var nowMouseOnSelfCardNum = getMouseOnSelfCardNum(mousePos.x,mousePos.y);
+  if((nowMouseOnSelfCardNum==clickOnCardNum)||(nowMouseOnSelfCardNum==-1&&clickOnCardNum==-1)){
+
+  }else if (nowMouseOnSelfCardNum==-1&&clickOnCardNum!=-1){
+    setCardUnClicked(ctx,selfCardPositions[clickOnCardNum][0],selfCardPositions[clickOnCardNum][1],1);
+  }else if(nowMouseOnSelfCardNum!=-1&&clickOnCardNum==-1){
+    setCardClicked(ctx,selfCardPositions[nowMouseOnSelfCardNum][0],selfCardPositions[nowMouseOnSelfCardNum][1]);
+  }else if (nowMouseOnSelfCardNum!=-1&&clickOnCardNum!=-1){
+    setCardUnClicked(ctx,selfCardPositions[clickOnCardNum][0],selfCardPositions[clickOnCardNum][1],1);
+    setCardClicked(ctx,selfCardPositions[nowMouseOnSelfCardNum][0],selfCardPositions[nowMouseOnSelfCardNum][1]);
+  }
+  clickOnCardNum = nowMouseOnSelfCardNum;
+}
+
+
+document.onmousedown = mouseDown;
