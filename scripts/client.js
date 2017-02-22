@@ -18,6 +18,9 @@ var status = 0;
 var onlineUsers = new Array();
 
 
+// 初始化stageArea 初始化在线人数
+updateStatus(ctx,0);
+// 连接服务器
 connectToServer();
 window.onbeforeunload = beforeDisConnect;//监听浏览器关闭前的事件
 window.onunload = disConnect;//监听浏览器关闭时

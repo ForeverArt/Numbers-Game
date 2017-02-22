@@ -1,8 +1,4 @@
-// record size
-var record = new Object;
-record.height = 20;
-record.intervalY = 2;
-record.dropbackColor = "rgba(0,0,0,0.2)";
+
 // CardSize
 var card = new Object;
 card.width = 80;
@@ -32,27 +28,26 @@ card.fontWidthOffset = 5;
 card.fontHeightOffset = 10;
 
 var card_lg = new Object;
-card_lg.width = 80;
-card_lg.height = 120;
+card_lg.width = 160;
+card_lg.height = 240;
 card_lg.selfColor = "#0080ff";
 card_lg.oppositeColor = "pink";
 card_lg.numColor = "black";
 card_lg.symbolColor = "white";
 card_lg.leftMargin = 80;
-card_lg.intervalX = 30;
-card_lg.arcRadius = 26;
+card_lg.arcRadius = 38;
 card_lg.arcStart = 0;
 card_lg.arcStop = 2*Math.PI;
-card_lg.arcWidth = 5;
-card_lg.triangleWidth = 4;
-card_lg.triangleLength = 52;
+card_lg.arcWidth = 7;
+card_lg.triangleWidth = 7;
+card_lg.triangleLength = 81;
 card_lg.triangleOffset = 7;
 card_lg.borderWidth = 4;
 card_lg.selfBorderColor = "black";
 card_lg.oppositeBorderColor = "white";
 card_lg.selectedColor = "red";
-card_lg.fontWidth = 30;
-card_lg.font = "30px Arial";
+card_lg.fontWidth = 50;
+card_lg.font = "50px Arial";
 card_lg.fontColor = "white";
 card_lg.fontWidthOffset = 4;
 card_lg.fontHeightOffset = 10;
@@ -143,10 +138,22 @@ statusDescriptionArea.font = "50px Arial";
 statusDescriptionArea.fontColor = "white";
 statusDescriptionArea.fontWidthOffset = -250;
 statusDescriptionArea.fontHeightOffset = 20;
-
-
-
-
+// record
+var record = new Object;
+record.width = recordArea.width/2;
+record.height = 37;
+record.intervalY = 2.5;
+record.dropbackColor = "rgba(0,0,0,0.5)";
+record.widthOffset = 15;
+record.heightOffset = 5;
+record.arcRadius = 14;
+record.arcStart = 0;
+record.arcStop = 2*Math.PI;
+record.arcWidth = 3;
+record.triangleWidth = 3;
+record.triangleLength = 30;
+record.triangleOffset = 7;
+record.symbolColor = "white";
 
 
 
@@ -180,23 +187,31 @@ initialArea(ctx);
 // 初始化手牌
 initialCards(ctx);
 
-testStageRecord();
-
-// 初始化stageArea 初始化在线人数
-updateStatus(ctx,0);
+testStageRecord(ctx);
 // repaintStage(ctx);
 
 
 
 
 // 大小牌测试
-function testStageRecord(){
+function testStageRecord(ctx){
+  addRecord(ctx,1,2,1);
+  addRecord(ctx,2,2,2);
+  addRecord(ctx,1,1,2);
+  addRecord(ctx,2,1,1);
+  addRecord(ctx,1,2,1);
+  addRecord(ctx,1,2,2);
   addRecord(ctx,1,1,1);
+  addRecord(ctx,2,1,2);
+  addRecord(ctx,2,1,1);
+  drawSelfLarge(ctx,1);
+  drawStageVs(ctx);
+  drawOppositeLarge(ctx,0);
 }
 // 增加一条记录
 function addRecord(ctx,leftIsOdd,rightIsOdd,isLeftWin){
   var leftX = recordArea.x;
-  var leftY = recordArea.y+recordArea.intervalY*(1+recordNum)+record.height*recordNum;
+  var leftY = recordArea.y+record.intervalY*(1+recordNum)+record.height*recordNum;
   var rightX = recordArea.x+recordArea.width/2;
   var rightY = leftY;
   var width = recordArea.width/2;
@@ -213,10 +228,10 @@ function addRecord(ctx,leftIsOdd,rightIsOdd,isLeftWin){
   }
   if (isLeftWin==1){
     ctx.fillStyle = record.dropbackColor;
-    ctx.fillRect(rightX, rightY, recordArea.width/2, record.height);
+    ctx.fillRect(rightX, rightY, width, height);
   }else{
     ctx.fillStyle = record.dropbackColor;
-    ctx.fillRect(leftX, leftY, recordArea.width/2, record.height);
+    ctx.fillRect(leftX, leftY, width, height);
   }
   recordNum = recordNum+1;
 }
@@ -352,10 +367,6 @@ function drawCard(ctx,x,y,cardNum,belongSelf){
   ctx.fillText(cardNum,x+card.width/2-card.fontWidth/2+card.fontWidthOffset,y+card.height/2+card.fontHeightOffset);
 }
 
-function drawCard_lg(ctx,x,y,cardNum,belongSelf){
-
-}
-
 function drawCardBack(ctx,x,y,cardNum,belongSelf){
   // border
   ctx.lineWidth = card.borderWidth;
@@ -378,11 +389,85 @@ function drawCardBack(ctx,x,y,cardNum,belongSelf){
 }
 
 function drawCardBack_record(ctx,x,y,cardNum){
+  if (cardNum%2==0){
+    // symbol circle
+    ctx.lineWidth = record.arcWidth;
+    ctx.strokeStyle = record.symbolColor;
+    ctx.beginPath();
+    ctx.arc(x+record.width/2,y+record.height/2,record.arcRadius,record.arcStart,record.arcStop);
+    ctx.stroke();
+  }else{
+    ctx.lineWidth = record.triangleWidth;
+    ctx.strokeStyle = record.symbolColor;
+    var temp = record.triangleLength/Math.sqrt(3);
+    ctx.moveTo(x+record.width/2,y+record.height/2-temp+record.triangleOffset);
+    ctx.lineTo(x+record.width/2-record.triangleLength/2,y+record.height/2+temp/2+record.triangleOffset);
+    ctx.lineTo(x+record.width/2+record.triangleLength/2,y+record.height/2+temp/2+record.triangleOffset);
+    ctx.lineTo(x+record.width/2,y+record.height/2-temp+record.triangleOffset);
+    ctx.stroke();
+  }
+}
 
+function drawStageVs(ctx){
+  var fontSize = 80;
+  var yOffset = 30;
+  ctx.font="80px Arial";
+  ctx.fillStyle="white";
+  ctx.fillText("VS",stageArea.x+stageArea.width/2-fontSize/2,stageArea.y+stageArea.height/2+yOffset);
+}
+
+function drawSelfLarge(ctx,isOdd){
+  var x = stageArea.x+stageArea.width/6;
+  var y = stageArea.y+stageArea.height/6;
+  drawCardBack_lg(ctx,x,y,isOdd,1);
+}
+
+function drawOppositeLarge(ctx,isOdd){
+  var x = stageArea.x+stageArea.width/6*4;
+  var y = stageArea.y+stageArea.height/6;
+  drawCardBack_lg(ctx,x,y,isOdd,0);
 }
 
 function drawCardBack_lg(ctx,x,y,cardNum,belongSelf){
+  // border
+  ctx.lineWidth = card_lg.borderWidth;
+  // color
+  if (belongSelf == 1){
+    ctx.fillStyle=card_lg.selfColor;
+    ctx.strokeStyle = card_lg.selfBorderColor;
+  }else{
+    ctx.fillStyle=card_lg.oppositeColor;
+    ctx.strokeStyle = card_lg.oppositeBorderColor;
+  }
+  ctx.fillRect(x, y, card_lg.width, card_lg.height);
+  ctx.strokeRect(x, y, card_lg.width, card_lg.height);
 
+  if (cardNum%2==0){
+    drawCircle_lg(ctx,x,y);
+  }else{
+    drawTriangle_lg(ctx,x,y);
+  }
+}
+
+function drawCircle_lg(ctx,x,y){
+  // symbol circle
+  ctx.lineWidth = card_lg.arcWidth;
+  ctx.strokeStyle = card_lg.symbolColor;
+  ctx.beginPath();
+  ctx.arc(x+card_lg.width/2,y+card_lg.height/2,card_lg.arcRadius,card_lg.arcStart,card_lg.arcStop);
+  ctx.stroke();
+}
+
+function drawTriangle_lg(ctx,x,y){
+  // symbol triangle
+  ctx.lineWidth = card_lg.triangleWidth;
+  ctx.strokeStyle = card_lg.symbolColor;
+  var temp = card_lg.triangleLength/Math.sqrt(3);
+  ctx.moveTo(x+card_lg.width/2,y+card_lg.height/2-temp+card_lg.triangleOffset);
+  ctx.lineTo(x+card_lg.width/2-card_lg.triangleLength/2,y+card_lg.height/2+temp/2+card_lg.triangleOffset);
+  ctx.lineTo(x+card_lg.width/2+card_lg.triangleLength/2,y+card_lg.height/2+temp/2+card_lg.triangleOffset);
+  ctx.lineTo(x+card_lg.width/2,y+card_lg.height/2-temp+card_lg.triangleOffset);
+  ctx.stroke();
 }
 
 function drawTriangle(ctx,x,y){
@@ -445,11 +530,13 @@ function repaintStage(ctx){
   ctx.fillStyle=stageArea.fillColor;
   ctx.fillRect(stageArea.x,stageArea.y,stageArea.width,stageArea.height);
 }
+
 function repaintOnlineUserNumArea(ctx){
   //stageArea
   ctx.fillStyle=onlineUserNumArea.fillColor;
   ctx.fillRect(onlineUserNumArea.x,onlineUserNumArea.y,onlineUserNumArea.width,onlineUserNumArea.height);
 }
+
 function updateOnlineNum(ctx,num){
   repaintOnlineUserNumArea(ctx);
   ctx.fillStyle = onlineUserNumArea.fontColor;
